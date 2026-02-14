@@ -1,0 +1,26 @@
+{
+    "name": "payment-service",
+    "version": "1.0.0",
+    "description": "Payment Verification Service for Trust-Verified Payment Platform",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "dev": "ts-node-dev src/index.ts"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "stripe": "^14.0.0",
+        "razorpay": "^2.9.2",
+        "pg": "^8.11.0",
+        "typeorm": "^0.3.17",
+        "reflect-metadata": "^0.1.13",
+        "dotenv": "^16.3.1"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0",
+        "ts-node-dev": "^2.0.0",
+        "@types/node": "^20.0.0",
+        "@types/express": "^4.17.0"
+    }
+}

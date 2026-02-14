@@ -1,0 +1,20 @@
+
+> agreement-service@1.0.0 start
+> node dist/index.js
+
+Enabling inline tracing for this federated service. To disable, use ApolloServerPluginInlineTraceDisabled.
+Agreement Service ready at http://0.0.0.0:4001/graphql
+
+> agreement-service@1.0.0 start
+> node dist/index.js
+
+Data Source has been initialized!
+Enabling inline tracing for this federated service. To disable, use ApolloServerPluginInlineTraceDisabled.
+Agreement Service ready at http://0.0.0.0:4001/graphql
+
+> agreement-service@1.0.0 start
+> node dist/index.js
+
+Data Source has been initialized!
+Enabling inline tracing for this federated service. To disable, use ApolloServerPluginInlineTraceDisabled.
+Agreement Service ready at http://0.0.0.0:4001/graphql

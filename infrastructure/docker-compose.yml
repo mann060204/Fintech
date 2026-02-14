@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  # Databases
+  postgres:
+    image: postgres:15-alpine
+    container_name: trust_platform_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: trust_platform_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+
+  mongo:
+    image: mongo:6.0
+    container_name: trust_platform_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: trust_platform_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Backend Services
+
+  agreement-service:
+    build: ../backend/services/agreement-service
+    container_name: agreement_service
+    ports:
+      - "4001:4001"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=admin
+      - DB_PASSWORD=password
+      - DB_NAME=trust_platform_db
+      - PAYMENT_SERVICE_URL=http://payment-service:4002
+    depends_on:
+      - postgres
+
+  payment-service:
+    build: ../backend/services/payment-service
+    container_name: payment_service
+    ports:
+      - "4002:4002"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=admin
+      - DB_PASSWORD=password
+      - DB_NAME=trust_platform_db
+    depends_on:
+      - postgres
+
+  trust-ai-engine:
+    build: ../backend/services/trust-ai-engine
+    container_name: trust_ai_engine
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
+
+  context-ai-engine:
+    build: ../backend/services/context-ai-engine
+    container_name: context_ai_engine
+    ports:
+      - "8002:8002"
+
+  reward-service:
+    build: ../backend/services/reward-service
+    container_name: reward_service
+    ports:
+      - "4003:4003"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/trust_platform_rewards
+    depends_on:
+      - mongo
+
+  api-gateway:
+    build: ../backend/api-gateway
+    container_name: api_gateway
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - AGREEMENT_SERVICE_URL=http://agreement-service:4001/graphql
+      - USER_SERVICE_URL=http://user-service:4004/graphql
+    depends_on:
+      - agreement-service
+      - user-service
+
+  user-service:
+    build: ../backend/services/user-service
+    container_name: user_service
+    ports:
+      - "4004:4004"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=admin
+      - DB_PASSWORD=password
+      - DB_NAME=user_db
+      - JWT_SECRET=supersecretkey
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
