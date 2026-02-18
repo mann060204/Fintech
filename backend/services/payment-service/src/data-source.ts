@@ -14,9 +14,7 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME || "trust_platform_db",
     synchronize: true, // Auto-create tables (dev only)
     logging: false,
-    logging: false,
     entities: [__dirname + "/entity/*.js"],
-    migrations: [],
     migrations: [],
     subscribers: [],
 });

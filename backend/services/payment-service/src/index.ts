@@ -49,6 +49,6 @@ AppDataSource.initialize().then(() => {
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`Payment Service running on port ${PORT}`);
     });
-}).catch(err => {
+}).catch((err: any) => {
     console.error("Error initializing Payment Data Source", err);
 });
