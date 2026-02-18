@@ -67,6 +67,7 @@ export const typeDefs = gql`
     addMemberToGroup(groupId: ID!, userId: String!): Group
     addExpense(groupId: ID!, description: String!, amount: Float!, payerId: String!, splits: [SplitInput]!): Expense
     settleDebt(groupId: ID!, debtorId: String!, creditorId: String!, amount: Float!): Expense
+    deleteAgreement(id: ID!): Boolean
   }
 
   type ContextResult {

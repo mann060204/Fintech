@@ -294,6 +294,11 @@ export const resolvers = {
             expense.group = group;
 
             return await expenseRepository.save(expense);
+        },
+        deleteAgreement: async (_: any, { id }: { id: string }) => {
+            const agreementRepository = AppDataSource.getRepository(Agreement);
+            const result = await agreementRepository.delete(id);
+            return result.affected ? result.affected > 0 : false;
         }
     },
     Group: {

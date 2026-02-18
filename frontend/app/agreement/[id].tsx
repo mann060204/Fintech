@@ -1,4 +1,4 @@
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Text, Button, Card, Divider, Chip, ActivityIndicator, useTheme, TextInput, SegmentedButtons } from 'react-native-paper';
 import { gql } from '@apollo/client';
@@ -28,8 +28,15 @@ const VERIFY_PAYMENT = gql`
   }
 `;
 
+const DELETE_AGREEMENT = gql`
+  mutation DeleteAgreement($id: ID!) {
+    deleteAgreement(id: $id)
+  }
+`;
+
 export default function AgreementDetailsScreen() {
     const { id } = useLocalSearchParams();
+    const router = useRouter(); // Import useRouter
     const theme = useTheme();
     const [transactionId, setTransactionId] = useState('');
     const [provider, setProvider] = useState('RAZORPAY');
@@ -48,6 +55,21 @@ export default function AgreementDetailsScreen() {
         },
     });
 
+    const [deleteAgreement, { loading: deleting }] = useMutation(DELETE_AGREEMENT, {
+        onCompleted: () => {
+            Alert.alert('Success', 'Agreement deleted successfully!');
+            if (router.canGoBack()) {
+                router.back();
+            } else {
+                router.replace('/');
+            }
+        },
+        onError: (err) => {
+            Alert.alert('Error', err.message);
+        },
+        refetchQueries: ['ListAgreements'], // Ensure list updates
+    });
+
     const handlePayment = () => {
         if (!transactionId) {
             Alert.alert('Error', 'Please enter a Transaction ID');
@@ -60,6 +82,21 @@ export default function AgreementDetailsScreen() {
                 provider: provider,
             },
         });
+    };
+
+    const handleDelete = () => {
+        Alert.alert(
+            "Delete Agreement",
+            "Are you sure you want to delete this agreement?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => deleteAgreement({ variables: { id } })
+                }
+            ]
+        );
     };
 
     if (loading) return <View style={styles.center}><ActivityIndicator size="large" /></View>;
@@ -130,6 +167,18 @@ export default function AgreementDetailsScreen() {
                             Payment Failed/Disputed
                         </Button>
                     )}
+                </Card.Actions>
+                <Card.Actions>
+                    <Button
+                        mode="contained-tonal"
+                        onPress={handleDelete}
+                        loading={deleting}
+                        icon="delete"
+                        buttonColor={theme.colors.errorContainer}
+                        textColor={theme.colors.onErrorContainer}
+                    >
+                        Delete Agreement
+                    </Button>
                 </Card.Actions>
             </Card>
         </ScrollView>
