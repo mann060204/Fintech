@@ -117,8 +117,8 @@ async function startServer() {
   await server.start();
   server.applyMiddleware({ app: app as any });
 
-  app.listen(4004, () => {
-    console.log("User Service ready at http://localhost:4004/graphql");
+  app.listen(4004, '0.0.0.0', () => {
+    console.log("User Service ready at http://0.0.0.0:4004/graphql");
   });
 }
 
